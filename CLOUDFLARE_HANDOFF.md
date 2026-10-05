@@ -97,7 +97,7 @@ npx wrangler d1 time-travel restore class-score-db --bookmark <bookmark>
 
 - 不要把总管理员密码写入 GitHub；需要重置时重新生成 PBKDF2 哈希并更新 D1。
 - 不要提交 `.wrangler/`、`.env`、`data/`、`backup-*.sql` 或任何数据库导出。
-- GitHub 仓库应保持私有，因为源码包含基础设施标识符，且该系统处理实名评分。
+- 仓库可以公开，但公开前必须确认不包含名单、评分数据、密码、Token、Cookie、`.wrangler/`、`.env` 或数据库导出。账户 ID、Worker 名称和 D1 ID 属于基础设施标识符，不是登录凭据，但公开后应避免与任何密钥一起泄露。
 - 删除班级、管理员或执行 Time Travel 前先备份数据库。
 - 切换域名只需修改 Custom Domain 绑定，不应删除腾讯云域名或更改 Nameserver。
 
@@ -109,4 +109,3 @@ npx wrangler d1 time-travel restore class-score-db --bookmark <bookmark>
 - `tests/`：自动化测试
 - `wrangler.jsonc`：Worker、Assets 与 D1 配置
 - `使用说明.md`：面向最终用户的操作说明
-
