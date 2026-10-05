@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light">
+    <meta name="theme-color" content="#176b5b">
+    <title>管理员 · 班级互评</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/admin.js" defer></script>
+  </head>
+  <body>
+    <header class="site-header admin-header">
+      <div class="header-inner">
+        <a class="brand" href="/admin" aria-label="班级互评管理页">
+          <span class="brand-mark">管</span>
+          <span>评分管理</span>
+        </a>
+        <span><a class="header-link" href="/">学生端</a> · <a class="header-link" href="/admin?super=1">总管理员</a></span>
+      </div>
+    </header>
+
+    <main class="page-shell admin-shell">
+      <section id="admin-loading" class="state-panel" aria-live="polite">
+        <div class="spinner" aria-hidden="true"></div>
+        <p>正在读取评分状态…</p>
+      </section>
+
+      <section id="setup-view" class="admin-form-layout hidden">
+        <div class="entry-copy">
+          <p class="eyebrow">首次设置</p>
+          <h1>创建班级管理员</h1>
+          <p>每位老师或负责人创建自己的班级，班级数据彼此隔离。名单支持换行、逗号或表格列粘贴。</p>
+        </div>
+        <form id="setup-form" class="form-surface wide" novalidate>
+          <label for="admin-name">管理员姓名</label>
+          <input id="admin-name" required>
+          <label for="class-name">班级名称</label>
+          <input id="class-name" required>
+          <label for="setup-roster">班级名单</label>
+          <textarea id="setup-roster" rows="12" placeholder="张三&#10;李四&#10;王五" required></textarea>
+          <p id="setup-count" class="field-hint">当前识别 0 人</p>
+          <div class="two-columns">
+            <div>
+              <label for="setup-password">管理员密码</label>
+              <input id="setup-password" type="password" minlength="8" maxlength="100" autocomplete="new-password" required>
+            </div>
+            <div>
+              <label for="setup-password-confirm">再次输入密码</label>
+              <input id="setup-password-confirm" type="password" minlength="8" maxlength="100" autocomplete="new-password" required>
+            </div>
+          </div>
+          <p class="field-hint">至少 8 个字符。密码无法找回，请妥善保存。</p>
+          <p id="setup-error" class="form-error hidden" role="alert"></p>
+          <button class="button primary" type="submit">创建班级</button>
+        </form>
+      </section>
+
+      <section id="admin-login-view" class="entry-layout hidden">
+        <div class="entry-copy">
+          <p class="eyebrow">管理员</p>
+          <h1>登录管理后台</h1>
+          <p>学生端不会显示任何人的分数。原始评分和汇总结果仅能在此处导出。</p>
+        </div>
+        <form id="admin-login-form" class="form-surface" novalidate>
+          <label for="login-admin-name">管理员姓名</label>
+          <input id="login-admin-name" required>
+          <label for="admin-password">管理员密码</label>
+          <input id="admin-password" type="password" autocomplete="current-password" required>
+          <p id="admin-login-error" class="form-error hidden" role="alert"></p>
+          <button class="button primary full" type="submit">登录班级后台</button>
+        </form>
+      </section>
+
+      <section id="super-login-view" class="entry-layout hidden">
+        <div class="entry-copy"><p class="eyebrow">总管理员</p><h1>查看所有班级</h1><p>总管理员可以导出全部班级的评分，以及指定评分人的明细。</p></div>
+        <form id="super-login-form" class="form-surface" novalidate><label for="super-password">总管理员密码</label><input id="super-password" type="password" required><p id="super-login-error" class="form-error hidden" role="alert"></p><button class="button secondary full" type="submit">登录总管理员</button></form>
+      </section>
+
+      <section id="dashboard-view" class="hidden">
+        <div class="dashboard-heading">
+          <div>
+          <p class="eyebrow" id="dashboard-role">管理员后台</p>
+            <h1>评分进度</h1>
+          </div>
+          <button id="admin-logout" class="button quiet" type="button">退出登录</button>
+        </div>
+
+        <div class="metric-band">
+          <div class="metric">
+            <span>已提交</span>
+            <strong id="submitted-metric">0</strong>
+          </div>
+          <div class="metric">
+            <span>待提交</span>
+            <strong id="pending-metric">0</strong>
+          </div>
+          <div class="metric">
+            <span>完成率</span>
+            <strong id="rate-metric">0%</strong>
+          </div>
+          <div class="metric-actions">
+            <a id="export-all" class="button primary hidden" href="/api/super/export-all" download>导出所有评分</a>
+            <a id="export-raw" class="button primary" href="#" download>导出本班明细</a>
+            <a id="export-rater" class="button secondary hidden" href="#" download>导出指定评分人</a>
+          </div>
+        </div>
+        <div id="rater-export-tools" class="instruction-band hidden">
+          <label for="export-class">指定班级</label><select id="export-class"></select>
+          <label for="export-rater-name">指定评分人</label><textarea id="export-rater-name" rows="3" placeholder="可输入多人姓名，用换行或逗号分隔"></textarea>
+          <a id="export-rater-link" class="button secondary" href="#" download>导出这些人的评分</a>
+        </div>
+
+        <section class="admin-section">
+          <div class="section-heading">
+            <div>
+              <h2>名单与提交状态</h2>
+              <p>这里只显示是否提交，不在网页中展示个人分数。</p>
+            </div>
+            <div class="section-tools"><label for="admin-class-filter">显示班级</label><select id="admin-class-filter"><option value="all">全部班级</option></select></div>
+          </div>
+          <div id="submission-list" class="class-status-list"></div>
+          <div id="class-delete-tools" class="hidden"></div>
+        </section>
+
+        <details id="roster-settings" class="settings-section">
+          <summary>更换班级名单</summary>
+          <div class="settings-body">
+            <p class="warning-copy">更换名单将永久清空当前所有评分。请先导出需要保留的数据。</p>
+            <form id="roster-form">
+              <label for="roster-editor">新名单</label>
+              <textarea id="roster-editor" rows="10" required></textarea>
+              <p id="roster-editor-count" class="field-hint"></p>
+              <label class="confirm-check">
+                <input id="confirm-roster-reset" type="checkbox">
+                <span>我已确认清空当前所有评分并更换名单</span>
+              </label>
+              <p id="roster-error" class="form-error hidden" role="alert"></p>
+              <button class="button danger" type="submit">清空评分并更换名单</button>
+            </form>
+          </div>
+        </details>
+      </section>
+    </main>
+
+    <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+  </body>
+</html>

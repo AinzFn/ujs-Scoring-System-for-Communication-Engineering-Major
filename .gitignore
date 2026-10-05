@@ -1,0 +1,9 @@
+data/
+*.log
+.env
+.wrangler/
+node_modules/
+backup-*.sql
+historical-*.sql
+*.sqlite
+*.sqlite3

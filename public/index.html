@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light">
+    <meta name="theme-color" content="#176b5b">
+    <title>班级互评</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/student.js" defer></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="brand" href="/" aria-label="班级互评首页">
+          <span class="brand-mark">评</span>
+          <span>班级互评</span>
+        </a>
+        <span class="privacy-label">结果仅管理员可见</span>
+      </div>
+    </header>
+
+    <main class="page-shell">
+      <section id="loading-view" class="state-panel" aria-live="polite">
+        <div class="spinner" aria-hidden="true"></div>
+        <p>正在载入名单…</p>
+      </section>
+
+      <section id="pending-view" class="state-panel hidden">
+        <div class="state-symbol">!</div>
+        <h1>评分尚未开放</h1>
+        <p>管理员还没有导入班级名单，请稍后再来。</p>
+      </section>
+
+      <section id="login-view" class="entry-layout hidden">
+        <div class="entry-copy">
+          <p class="eyebrow">同学互评</p>
+          <h1>填写本人姓名，开始评分</h1>
+          <p>你需要为名单中的每位同学打分，包括自己。评分提交后不可修改，也不会向其他同学公开。</p>
+        </div>
+        <form id="login-form" class="form-surface" novalidate>
+          <label for="student-class">所在班级</label>
+          <select id="student-class" required></select>
+          <label for="student-name">本人姓名</label>
+          <input id="student-name" name="name" type="text" list="roster-options" autocomplete="name" maxlength="50" placeholder="请输入名单中的姓名" required>
+          <datalist id="roster-options"></datalist>
+          <p class="field-hint">请使用名单中的完整姓名。</p>
+          <p id="login-error" class="form-error hidden" role="alert"></p>
+          <button class="button primary full" type="submit">进入评分</button>
+        </form>
+      </section>
+
+      <section id="score-view" class="hidden">
+        <div class="score-heading">
+          <div>
+            <p class="eyebrow">当前评分人</p>
+            <h1 id="rater-name"></h1>
+          </div>
+          <button id="switch-user" class="button quiet" type="button">切换姓名</button>
+        </div>
+
+        <div class="instruction-band">
+          <div>
+            <strong>评分范围：10–20 分</strong>
+            <span>所有项目均为必填，名单包含本人。</span>
+          </div>
+          <div class="progress-copy"><span id="completed-count">0</span>/<span id="total-count">0</span> 已填写</div>
+        </div>
+
+        <form id="score-form" novalidate>
+          <div class="score-table-header" aria-hidden="true">
+            <span>被评分人</span>
+            <span>分数</span>
+          </div>
+          <div id="score-list" class="score-list"></div>
+          <div class="submit-bar">
+            <p id="score-error" class="form-error hidden" role="alert"></p>
+            <button id="submit-scores" class="button primary" type="submit" disabled>提交全部评分</button>
+          </div>
+        </form>
+      </section>
+
+      <section id="done-view" class="state-panel success hidden">
+        <div class="state-symbol">✓</div>
+        <p class="eyebrow">提交成功</p>
+        <h1>你的评分已经保存</h1>
+        <p id="done-message"></p>
+        <button id="done-switch-user" class="button quiet" type="button">切换姓名</button>
+      </section>
+    </main>
+
+    <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+  </body>
+</html>
